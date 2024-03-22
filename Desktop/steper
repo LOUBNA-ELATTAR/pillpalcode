@@ -1,0 +1,9 @@
+from RPiStepMotor import StepMotor
+import time
+
+StepMotor.setmode()
+
+with StepMotor((6, 13, 19, 26)) as motor:
+	motor.rotate(180, 20, (lambda x: x, 0, 100), nofork=True)
+	time.sleep(5)
+	motor.rotate(-180, 10)

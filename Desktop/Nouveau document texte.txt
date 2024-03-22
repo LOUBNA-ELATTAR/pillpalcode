@@ -1,0 +1,43 @@
+import RPi.GPIO as GPIO
+import time
+from gpiozero import AngularServo
+from datetime import datetime
+
+GPIO.setmode(GPIO.BOARD)
+ControlPin =[7,11,13,15]
+servo = AngularServo(18, min_pulse_width=0.0006, max_pulse_width=0.0023)
+# big servo ;servo =AngularServo(18, min_angle=0, max_angle=270, min_pulse_width=0.0005, max_pulse_width=0.0025)
+#use servo.angle= whatever angleyou want
+def get_dates(text_path,x):
+    dates = {}
+    with open(text_path, "r") as f:
+        lines = f.readlines()
+        for i in range(len(lines)):
+            date = lines[i].split(",")
+            dates[i] = date
+    return dates[x]
+def move_motor(deg):
+  y=deg*512/360
+  for pin in ControlPin:
+    GPIO.setup(pin,GPIO.OUT)
+    GPIO.output(pin,0)
+  seq= [ [1,0,0,0],
+         [1,1,0,0],
+         [0,1,0,0],
+         [0,1,1,0],
+         [0,0,1,0],
+         [0,0,1,1],
+         [0,0,0,1],
+         [1,0,0,1] ]
+  for i in range (y):
+    for halfstep in range(8):
+     for pin in range(4):
+      GPIO.output(ControlPin[pin],seq[halfstep][pin])
+     time.sleep(0.001)
+  GPIO.cleanup()
+while True :
+    print(get_dates("data.txt", 2))
+    #datetime.now  ().strftime('%Y-%m-%d %H:%M:%S')
+
+
+
